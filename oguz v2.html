@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Оғыз мемлекеті</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:Georgia,'Times New Roman',serif;color:#fdf3dc;background:#0b1a2e}
+#bg{position:fixed;inset:0;background:radial-gradient(circle at 20% 20%,#1d4e7a,transparent 55%),radial-gradient(circle at 80% 80%,#7a3b12,transparent 55%),#0b1a2e;animation:shift 14s ease-in-out infinite alternate}
+@keyframes shift{to{filter:hue-rotate(35deg) brightness(1.15)}}
+canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+.ornament{position:fixed;inset:12px;border:2px solid #e8b94a55;border-radius:18px;pointer-events:none}
+.ornament::before,.ornament::after{content:"❖";position:absolute;color:#e8b94a;font-size:22px;animation:spin 8s linear infinite}
+.ornament::before{top:-14px;left:50%}.ornament::after{bottom:-14px;left:50%}
+@keyframes spin{to{transform:rotate(360deg)}}
+#bar{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,#e8b94a,#fff3b0);transition:width .6s;z-index:9}
+.slide{position:fixed;inset:0;padding:34px 26px 110px;display:flex;flex-direction:column;justify-content:center;opacity:0;pointer-events:none;transform:translateX(60px) scale(.96);transition:.7s cubic-bezier(.2,.8,.2,1);overflow-y:auto}
+.slide.on{opacity:1;pointer-events:auto;transform:none}
+.slide>*{opacity:0;transform:translateY(25px)}
+.slide.on>*{animation:up .8s forwards}
+.slide.on>*:nth-child(2){animation-delay:.12s}.slide.on>*:nth-child(3){animation-delay:.24s}
+.slide.on>*:nth-child(4){animation-delay:.36s}.slide.on>*:nth-child(5){animation-delay:.48s}.slide.on>*:nth-child(6){animation-delay:.6s}
+@keyframes up{to{opacity:1;transform:none}}
+.tag{color:#e8b94a;letter-spacing:3px;font-size:12px;text-transform:uppercase}
+h1{font-size:clamp(34px,9vw,64px);line-height:1.05;background:linear-gradient(90deg,#ffd76a,#fff,#ffd76a);background-size:200%;-webkit-background-clip:text;background-clip:text;color:transparent;margin:8px 0 10px}
+.slide.on h1{animation:up .8s forwards,shine 4s linear infinite}
+@keyframes shine{to{background-position:200% 0}}
+h2{font-size:clamp(24px,6vw,40px);color:#ffd76a;margin:6px 0 12px}
+p,li{font-size:clamp(15px,3.6vw,19px);line-height:1.55}
+.card{background:#ffffff12;backdrop-filter:blur(8px);border:1px solid #e8b94a55;border-radius:16px;padding:12px 15px;margin:6px 0;transition:.3s;font-size:clamp(15px,3.6vw,18px);line-height:1.5}
+.card:hover{transform:translateY(-4px) scale(1.02);background:#ffffff22}
+.card b{color:#ffd76a}
+.year{display:inline-block;background:#e8b94a;color:#2b1700;border-radius:20px;padding:2px 12px;font-weight:bold;margin-right:8px;animation:pulse 2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 8px #e8b94a33}}
+.map{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.map span{background:#1d4e7a;border:1px solid #e8b94a;border-radius:10px;padding:6px 10px;font-size:14px;animation:float 3s ease-in-out infinite}
+.map span:nth-child(3){animation-delay:.5s}.map span:nth-child(5){animation-delay:1s}
+@keyframes float{50%{transform:translateY(-6px)}}
+.hero{font-size:60px;animation:float 3s ease-in-out infinite;display:inline-block}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:12px 15px;font:inherit;font-size:16px;line-height:1.4;color:#fdf3dc;background:#ffffff14;border:1px solid #e8b94a88;border-radius:14px;cursor:pointer;transition:.25s}
+.opt:hover{background:#e8b94a33;transform:translateX(6px)}
+.opt.ok{background:#2e9d4f;border-color:#8dff9e;animation:pulse 1s 2}
+.opt.no{background:#a12b2b;animation:shake .4s}
+.opt.lock{pointer-events:none}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.fb{min-height:24px;margin-top:8px;font-size:16px;line-height:1.45;color:#ffd76a}
+.lvl{display:inline-block;color:#ff8a6a;font-size:13px;letter-spacing:2px}
+#score{font-size:72px;color:#ffd76a;text-align:center;animation:float 3s infinite}
+nav{position:fixed;bottom:0;left:0;right:0;padding:12px 22px calc(14px + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:5;background:linear-gradient(transparent,#0b1a2ecc 40%)}
+nav button{font:inherit;font-size:16px;padding:11px 20px;border-radius:30px;border:1px solid #e8b94a;background:#e8b94a;color:#2b1700;cursor:pointer;font-weight:bold}
+nav button:active{transform:scale(.92)}
+#cnt{font-size:14px;color:#ffd76a}
+@media (min-width:900px){
+ .slide{padding:50px calc(50% - 560px) 120px}
+ h1{font-size:92px}
+ h2{font-size:48px;margin-bottom:20px}
+ .card{font-size:23px;padding:18px 24px;margin:10px 0;border-radius:20px}
+ .slide>p{font-size:24px}
+ .opt{font-size:21px;padding:17px 22px}
+ .fb{font-size:21px}
+ .hero{font-size:90px}
+ .map span{font-size:19px;padding:9px 16px}
+ .year{font-size:20px}
+ .lvl{font-size:16px}
+ #score{font-size:140px}
+ nav{padding:16px 60px 24px}
+ nav button{font-size:20px;padding:14px 34px}
+ #cnt{font-size:18px}
+}
+@media (min-width:1600px){
+ .slide{padding-left:calc(50% - 680px);padding-right:calc(50% - 680px)}
+ .card{font-size:26px}
+ h1{font-size:110px}
+}
+</style>
+</head>
+<body>
+<div id="bg"></div><canvas id="c"></canvas><div class="ornament"></div><div id="bar"></div>
+
+<!-- 1 -->
+<section class="slide on">
+  <div class="tag">Қазақстан тарихы • 6-сынып • §5</div>
+  <h1>Оғыз мемлекеті</h1>
+  <div class="hero">🏇</div>
+  <p>IX–XI ғасырдың ортасы. Оғыздар – қазіргі түркі халықтарының қалыптасуына үлес қосқан, қазақтардың этникалық тарихында маңызды із қалдырған халық.</p>
+  <div class="card">📜 <b>Деректер:</b> ІХ–Х ғасырлардағы араб тіліндегі шығармалар: әл-Якубидің, географ әл-Факихтің еңбектері, сондай-ақ Махмұд Қашғаридің еңбегі.</div>
+  <div class="card">📖 Орыс жылнамаларында оғыздар <b>«торк»</b> деп аталады. Тарихтағы оқиғалар <b>«Оғызнама»</b> эпикалық шығармасында баяндалған.</div>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <h2>1. Оғыз тайпалары кім?</h2>
+  <div class="card">🗺 Деректерге қарағанда, оғыз тайпалары <b>Жетісу аумағында</b> қалыптасқан.</div>
+  <div class="card">🧬 Құрамына түркі тілдес тайпалармен қатар, <b>ундиеуропалық және фин-угор</b> тектес тайпалар да енген.</div>
+  <div class="card">🏞 Қазақстан аумағына келгенге дейін оғыздардың Жетісудағы ордасы <b>Ескі Гузия</b> деп аталды.</div>
+  <div class="card">⚔ Түрлі рудан тұратын тайпалар бірігіп, тарих сахнасына <b>оғыз</b> есімімен шықты.</div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <h2>2. Мемлекеттің құрылуы</h2>
+  <div class="card"><span class="year">VIII ғ.</span>Қарлұқтармен күрес нәтижесінде оғыздар Жетісуды тастап, Сырдария бойына қоныс аударды.</div>
+  <div class="card"><span class="year">IX ғ.</span>Сырдарияның төменгі ағысы мен Арал бойының далалық алқабын басып алды. Хазарлармен отырып, печенегтерге соңғы соққы берді де, Жайық пен Еділ аралығын толық иемденді.</div>
+  <div class="map"><span>Жетісу</span>→<span>Сырдария мен Арал бойы</span>→<span>Еділ мен Жайық</span></div>
+  <div class="card">🏙 Орталығы – <b>Янгикент</b> қаласы, Сырдария бойында, көшпелі және отырықшы мәдениет тоғысында орналасты. Билеушісі – <b>жабғу</b>.</div>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <h2>3. Күшеюі мен сыртқы саясат</h2>
+  <div class="card"><span class="year">965 ж.</span>Киев Русімен одақтасып, <b>Хазар қағанатын</b> талқандады. Мақсаты – Қара теңіз жағалауындағы құнарлы жерлерді алу және Еділ бойындағы сауда жолдарына бақылау орнату.</div>
+  <div class="card"><span class="year">985 ж.</span>Киев князі Владимирмен бірге <b>Еділ Бұлғариясын</b> жеңді. Бұл мемлекеттің саяси жағынан күшеюіне ықпал етті.</div>
+  <div class="card">🌍 Белсенді сыртқы саясат арқасында оңтүстікте Мауараннахрмен шектесіп, батысында Кавказ аймағына жетті. Х ғасырда Сырдариядан Кавказға дейінгі аумақ <b>«Оғыз даласы»</b> аталды.</div>
+  <div class="card">🤝 Оғыз мемлекеті Еуразия тарихында маңызды рөл атқарды.</div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <h2>4. Қалалар, кәсіп, дін</h2>
+  <div class="card">🏺 Оғыздардың қалалары: <b>Жент, Сауран, Сығанақ</b> және т.б.</div>
+  <div class="card">🌾 Малынан айырылған көпшілік отырықшы өмір салтына көшті. <b>Диқаншылық пен қолөнер</b> олардың негізгі кәсібіне айналды.</div>
+  <div class="card">🔁 Көшпелі дала Мауараннахр мен Жетісудың егіншілік өңірлерімен қарым-қатынас жасады.</div>
+  <div class="card">☪ Оғыздардың бір бөлігі <b>исламды</b> қабылдады.</div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <h2>5. Құлауы және маңызы</h2>
+  <div class="card">💰 Белсенді сыртқы саясат және көп жылғы соғыстар қазынаны талап етті, сондықтан жыл сайын <b>салық</b> ұлғайтылды. Тайпалар наразылық білдіріп, көтеріліс бастады.</div>
+  <div class="card"><span class="year">1041 ж.</span>Шахмәлік Хорезмді басып алды, бірақ екі жылдан кейін салжұқтарға түтқынға түсіп, өлтірілді. Ол – оғыздардың соңғы билеушісі.</div>
+  <div class="card">🧭 Қыпшақтардың соққысынан мемлекет құлады. Бір бөлігі Шығыс Еуропа мен Кіші Азияға қоныс аударды, қалғаны Дешті Қыпшақ тайпаларымен араласып кетті.</div>
+  <div class="card">⭐ Оғыздар түркі халықтарының, соның ішінде <b>қазақтардың</b> қалыптасуына үлес қосты. XI ғасырдың ортасына қарай Орталық Азияда қыпшақтар үстем жағдайға ие болды.</div>
+</section>
+
+<!-- quiz slides built by JS -->
+<div id="quiz"></div>
+
+<section class="slide" id="res">
+  <div class="tag">Нәтиже</div>
+  <h2>🏆 Тест аяқталды!</h2>
+  <div id="score">0/3</div>
+  <p id="rt" style="text-align:center"></p>
+</section>
+
+<nav>
+  <button id="prev">←</button>
+  <span id="cnt">1 / 10</span>
+  <button id="next">→</button>
+</nav>
+
+<script>
+const Q=[
+ {q:"Оғыздардың 965 жылғы Хазар қағанатына қарсы күресінің мақсаттары қандай?",
+  o:["Қара теңіз жағалауындағы құнарлы жерлерді алу және Еділ бойындағы сауда жолдарын бақылау","Ұлы Жібек жолын жабу және Қытайға жорық жасау","Мауараннахрды басып алу және ислам дінін таратуға кедергі жасау","Византиямен одақ құру және Кавказ халықтарын өзіне қарату"],a:0,
+  e:"Мәтін бойынша: Қара теңіз жағалауындағы құнарлы жайылымдық жерлерді тартып алу және Еділ бойымен өтетін сауда жолдарына бақылау орнату."},
+ {q:"Оқиғаларды дұрыс хронологиялық ретпен орналастырыңдар.",
+  o:["985 – Еділ Бұлғариясын жеңу → 965 – Хазар қағанатын талқандау → 1041 – Хорезмді басып алу","965 – Хазар қағанатын талқандау → 985 – Еділ Бұлғариясын жеңу → 1041 – Хорезмді басып алу","1041 – Хорезмді басып алу → 965 – Хазар қағанатын талқандау → 985 – Еділ Бұлғариясын жеңу","965 – Хазар қағанатын талқандау → 1041 – Хорезмді басып алу → 985 – Еділ Бұлғариясын жеңу"],a:1,
+  e:"Дұрыс рет: 965 ж. хазарлар, 985 ж. Еділ Бұлғариясы, 1041 ж. Шахмәлік Хорезмді басып алды."},
+ {q:"XI ғасырдың басында Оғыз мемлекетінің құлау себептері қайсылар? 1) салжұқтармен ұзақ жылғы соғыс 2) қыпшақ тайпаларының соққысы 3) ауыр салыққа қарсы көтерілістер 4) араб басқыншылығы 5) Ұлы Жібек жолы қызметінің тоқтатылуы",
+  o:["1, 2, 3","2, 4, 5","1, 4, 5","3, 4, 5"],a:0,
+  e:"Құлау себептері: салжұқтармен ұзақ соғыс, ауыр салыққа қарсы көтерілістер және қыпшақ тайпаларының соққысы. Араб басқыншылығы мен Жібек жолының тоқтатылуы мәтінде жоқ."}
+];
+let score=0,answered=0;
+const quiz=document.getElementById('quiz');
+Q.forEach((z,i)=>{
+  const s=document.createElement('section');s.className='slide';
+  s.innerHTML=`<span class="lvl">★★★ КҮРДЕЛІ СҰРАҚ ${i+1}/3</span><h2 style="font-size:clamp(18px,4.6vw,26px)">${z.q}</h2><div></div><div class="fb"></div>`;
+  const box=s.children[2],fb=s.children[3];
+  z.o.forEach((t,k)=>{
+    const b=document.createElement('button');b.className='opt';b.textContent=['A','Ә','Б','В'][k]+') '+t;
+    b.onclick=()=>{
+      box.querySelectorAll('.opt').forEach(x=>x.classList.add('lock'));
+      if(k===z.a){b.classList.add('ok');score++;burst();fb.textContent='🎉 Дұрыс! '+z.e}
+      else{b.classList.add('no');box.children[z.a].classList.add('ok');fb.textContent='❌ Қате. '+z.e}
+      answered++;
+      if(answered===Q.length){document.getElementById('score').textContent=score+'/3';
+        document.getElementById('rt').textContent=score==3?'Тамаша! Сен тарихшысың! 🔥':score==2?'Жақсы нәтиже! Тақырыпты тағы бір қарап шық.':'Тақырыпты қайталап, қайта байқап көр!'}
+    };
+    box.appendChild(b);
+  });
+  quiz.appendChild(s);
+});
+const S=[...document.querySelectorAll('.slide')];let n=0;
+function go(i){n=Math.max(0,Math.min(S.length-1,i));S.forEach((s,k)=>s.classList.toggle('on',k===n));
+ document.getElementById('cnt').textContent=(n+1)+' / '+S.length;
+ document.getElementById('bar').style.width=((n+1)/S.length*100)+'%';S[n].scrollTop=0}
+go(0);
+prev.onclick=()=>go(n-1);next.onclick=()=>go(n+1);
+document.onkeydown=e=>{if(e.key=='ArrowRight')go(n+1);if(e.key=='ArrowLeft')go(n-1)};
+let x0=null;document.ontouchstart=e=>x0=e.touches[0].clientX;
+document.ontouchend=e=>{if(x0===null)return;const d=e.changedTouches[0].clientX-x0;if(Math.abs(d)>80)go(n+(d<0?1:-1));x0=null};
+const c=document.getElementById('c'),g=c.getContext('2d');let P=[];
+function rs(){c.width=innerWidth;c.height=innerHeight}rs();onresize=rs;
+for(let i=0;i<45;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*2.5+.5,v:Math.random()*.5+.2,t:0});
+function burst(){for(let i=0;i<90;i++)P.push({x:innerWidth/2,y:innerHeight/2,r:Math.random()*4+2,vx:(Math.random()-.5)*12,vy:(Math.random()-.8)*12,t:1,l:90,h:Math.random()*360})}
+(function loop(){g.clearRect(0,0,c.width,c.height);
+ P=P.filter(p=>p.t===0||p.l>0);
+ P.forEach(p=>{if(p.t){p.x+=p.vx;p.y+=p.vy;p.vy+=.25;p.l--;g.fillStyle=`hsl(${p.h},90%,60%)`;g.fillRect(p.x,p.y,p.r,p.r*1.6)}
+ else{p.y-=p.v;if(p.y<0)p.y=c.height;g.fillStyle='#ffd76a99';g.beginPath();g.arc(p.x,p.y,p.r,0,7);g.fill()}});
+ requestAnimationFrame(loop)})();
+</script>
+</body>
+</html>
